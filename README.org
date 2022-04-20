@@ -1,0 +1,287 @@
+#+TITLE: Postgres Indexes for Python Programmers
+#+OPTIONS: ^:niL
+#+OPTIONS: toc:2
+#+OPTIONS: prop:t
+#+OPTIONS: num:nil
+#+STARTUP: showeverything
+#+OPTIONS: reveal_width:1400 reveal_height:1000
+#+AUTHOR: 
+#+EMAIL: ravi.kotecha@digital.trade.gov.uk
+#+PROPERTY: header-args:sql :engine postgres :dbuser ravi :database pgindexes :cache true :session pg :exports both
+#+PROPERTY: header-args:python :session python :cache true :exports both
+
+
+* Setup                                                     :noexport:
+  
+  #+BEGIN_SRC shell :cache true :results output
+    dropdb pgindexes
+    createdb -E utf8 pgindexes 
+  #+END_SRC
+
+  #+RESULTS:
+  
+
+* What is an index?
+An index is just a data structure that makes the searching faster for a specific
+column in a database.
+
+#+REVEAL: split
+**** What would happen without an index?
+To see if the row value matched the query, database software would have to look
+at every single row in the table.
+#+REVEAL: split
+**** Why not index every column?
+It takes up space, and the bigger your table is, the bigger your index will be.
+Another performance hit with indexes is that you must do the same actions on
+your index whenever you add, delete, or update entries in the corresponding
+table. Keep in mind that an index must include the same up-to-date data as
+whatever is in the table column covered by the index.
+
+** Postgres Index Types
+*** Hash
+
+A hash index, inverts the relationship between a primary key and a value in the
+table.
+
+#+REVEAL: split
+**** Supported Operators
+
+  - ~=~
+
+*** B-tree
+Balanced tree, _not_ binary tree.
+  
+  - Optimised for parallel index scans
+  - Very shallow unlike normal binary trees
+  - Cheap to keep balanced
+  - Sorted which allows for the ~<~ / ~>~ operators.
+
+Official docs: https://www.postgresql.org/docs/current/btree-intro.html
+
+Good explainer: https://rahulreddyr3.medium.com/indexing-in-postgresql-b-tree-4377bd72d7e5
+ 
+#+REVEAL: split
+**** Supported Operators
+
+ - ~<~
+ - ~<=~
+ - ~=~
+ - ~>=~
+ - ~BETWEEN~
+ - ~IN~
+ - ~IS NULL~
+ - ~IS NOT NULL~
+
+
+*** GIN
+**** Generalised Inverted Indexes
+- Most commonly used for full text searching
+- Good for when you have multiple values in a column, e.g ~array~, ~jsonb~ types.
+
+Further reading:
+- https://towardsdatascience.com/how-gin-indices-can-make-your-postgres-queries-15x-faster-af7a195a3fc5
+- https://pganalyze.com/blog/gin-index
+#+REVEAL: split
+**** Table
+| pk | menu item       |
+|----+-----------------|
+|  1 | chicken burger  |
+|  2 | chickpea burger |
+
+#+REVEAL: split
+**** Index
+| val      |     pk |
+|----------+--------|
+| chicken  |      1 |
+| chickpea |      2 |
+| burger   | [1, 2] |
+
+#+REVEAL: split
+**** Supported operators
+- ~<@~
+- ~@>~
+- ~=~
+- ~&&~
+
+*** GiST
+**** Generalised Search Tree
+Good for when a value of a row can overlap with the same column in another row.
+Think polygons on a map, or to return only rows where the polygon contains a
+point.
+
+GiST indexes can also be used on text columns for full text search similar to
+GINs but there are some fixed size constrains for GiST indexes.
+
+Further reading: https://medium.com/postgres-professional/indexes-in-postgresql-5-gist-86e19781b5db
+#+REVEAL: split
+ [[./poly.jpg]]
+ 
+*** SP-GiST
+The name implies that this index type is similar to GiST, which is true but this works better for data
+where the values can be highly clustered like post codes or IP addresses.
+
+
+*** BRIN
+* Python Implementation
+   Example: A database table storing logins
+** Rows
+
+Rows will be represented as a ~namedtuple~.
+
+#+BEGIN_SRC python
+  from collections import namedtuple
+  
+  Login = namedtuple('Login', ['email', 'date', 'user_agent', 'ip'])
+#+END_SRC
+
+
+#+RESULTS:
+
+** Tables
+
+Tables will be represented as a Python ~list~
+
+#+BEGIN_SRC python :exports code
+  [
+      Login(
+
+          email='ostafford@example.org',
+          date=datetime.date(2010, 4, 13),
+          user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/531.0 (KHTML, like Gecko) Chrome/54.0.869.0 Safari/531.0',
+          ip='44.14.199.207'
+      ),
+      Login(
+          email='joe@example.com',
+          date=datetime.date(2013, 4, 13),
+          user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/531.0 (KHTML, like Gecko) Chrome/94.0.822.0 Safari/541.0',
+          ip='22.12.189.17'
+      )
+  ]
+#+END_SRC
+
+#+RESULTS:
+
+
+*** Postgres equivalent   
+#+BEGIN_SRC sql :exports code
+  CREATE TABLE IF NOT EXISTS logins (
+         id serial primary key,
+         email VARCHAR(100) unique not null,
+         date timestamp not null default NOW(),
+         user_agent VARCHAR(1000) not null,
+         ip inet not null
+  );
+#+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+
+  #+BEGIN_SRC sql :session pg :exports none :results output
+    \pset format wrapped
+    \pset columns 72
+    \d logins
+  #+END_SRC
+
+#+RESULTS:
+#+begin_example
+                         Table "public.logins"
+ Column  |            Type             |           Modifiers            
+---------+-----------------------------+--------------------------------
+ id      | integer                     | not null default nextval('logi.
+         |                             |.ns_id_seq'::regclass)
+ email   | character varying(100)      | not null
+ date    | timestamp without time zone | not null default now()
+ user_ag.| character varying(1000)     | not null
+.ent     |                             | 
+ ip      | inet                        | not null
+Indexes:
+    "logins_pkey" PRIMARY KEY, btree (id)
+    "logins_email_key" UNIQUE CONSTRAINT, btree (email)
+
+#+end_example
+
+*** Populate a "table"
+
+#+BEGIN_SRC python :results output 
+
+  from pprint import pprint
+  import faker
+  import random
+
+  fake = faker.Faker()
+
+  def make_row():
+      return Login(
+          fake.unique.email(),
+          fake.date_object(),
+          fake.chrome(),
+          fake.ipv4_public()
+      )
+
+  table = [make_row() for _ in range(10000)]
+  random_login = random.choice(table)
+  last_login = table[-1]
+  pprint(last_login)
+
+#+END_SRC
+
+#+RESULTS:
+: Login(email='ostafford@example.org', date=datetime.date(2010, 4, 13), user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/531.0 (KHTML, like Gecko) Chrome/54.0.869.0 Safari/531.0', ip='44.14.199.207')
+
+*** Find a login by email address
+#+BEGIN_SRC python
+  from timeit import timeit
+
+  def find_by_email(t, email):
+      for x in t:
+          if x.email == email:
+              return x
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC python
+  timeit(
+      'find_by_email(table, last_login.email)',
+      globals=globals(),
+      number=10000
+  )
+#+END_SRC
+
+#+RESULTS:
+: 3.957690246999846
+
+*** With a hash index
+
+#+BEGIN_SRC python :results output
+  h_i = {login.email: i for i, login in enumerate(table)}
+  def find_by_email_with_hash_index(t, email, hash_index):
+      return table[hash_index[email]]
+
+  # peek at the index
+  pprint(dict(list(h_i.items())[:3]))
+#+END_SRC
+
+#+RESULTS:
+: {'angela66@example.net': 2,
+:  'craneadam@example.net': 0,
+:  'stacy11@example.net': 1}
+
+#+BEGIN_SRC python
+  timeit(
+      'find_by_email_with_hash_index(table, last_login.email, h_i)',
+      globals=globals(),
+      number=10000
+  )
+#+END_SRC
+
+#+RESULTS:
+: 0.0022467480011982843
+
+
+
+
+# Local Variables:
+# org-confirm-babel-evaluate: nil
+# End:
