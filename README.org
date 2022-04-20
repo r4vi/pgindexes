@@ -9,7 +9,8 @@
 #+EMAIL: ravi.kotecha@digital.trade.gov.uk
 #+PROPERTY: header-args:sql :engine postgres :dbuser ravi :database pgindexes :cache true :session pg :exports both
 #+PROPERTY: header-args:python :session python :cache true :exports both
-
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
+#+REVEAL_VERSION: 4
 
 * Setup                                                     :noexport:
   
@@ -117,11 +118,20 @@ Further reading: https://medium.com/postgres-professional/indexes-in-postgresql-
  [[./poly.jpg]]
  
 *** SP-GiST
-The name implies that this index type is similar to GiST, which is true but this works better for data
+**** Space partitioned GiST 
+As the name implies this index type is similar to GiST, but this works better for data
 where the values can be highly clustered like post codes or IP addresses.
 
 
 *** BRIN
+**** Block range indexes
+When you have a huge dataset that is organised by dates, such as log events,
+BRIN indexes allow you to rapidly skip or eliminate a lot of the irrelevant
+data. BRIN indexes are also kept as smaller indexes in relation to the entire
+data size, making them an excellent choice for huge datasets.
+
+Docs: https://www.postgresql.org/docs/current/brin-intro.html
+
 * Python Implementation
    Example: A database table storing logins
 ** Rows
@@ -152,7 +162,7 @@ Tables will be represented as a Python ~list~
       ),
       Login(
           email='joe@example.com',
-          date=datetime.date(2013, 4, 13),
+          date=datetime.date(2013, 11, 3),
           user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/531.0 (KHTML, like Gecko) Chrome/94.0.822.0 Safari/541.0',
           ip='22.12.189.17'
       )

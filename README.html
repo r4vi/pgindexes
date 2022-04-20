@@ -14,22 +14,22 @@
 <div class="reveal">
 <div class="slides">
 <section id="sec-title-slide">
-<h1 class="title">Postgres Indexes for Python Programmers</h1><p class="date">Created: 2022-04-20 Wed 22:33</p>
+<h1 class="title">Postgres Indexes for Python Programmers</h1><p class="date">Created: 2022-04-20 Wed 23:01</p>
 </section>
 <section id="table-of-contents-section">
 <div id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#/slide-orgc59ff29">What is an index?</a>
+<li><a href="#/slide-orgc909e4f">What is an index?</a>
 <ul>
-<li><a href="#/slide-org79de817">Postgres Index Types</a></li>
+<li><a href="#/slide-org452652f">Postgres Index Types</a></li>
 </ul>
 </li>
-<li><a href="#/slide-org7ecc046">Python Implementation</a>
+<li><a href="#/slide-orgcaf2f74">Python Implementation</a>
 <ul>
-<li><a href="#/slide-orge6c0c2b">Rows</a></li>
-<li><a href="#/slide-orge370a13">Tables</a></li>
+<li><a href="#/slide-org9cd26a5">Rows</a></li>
+<li><a href="#/slide-orgd1937bc">Tables</a></li>
 </ul>
 </li>
 </ul>
@@ -38,8 +38,8 @@
 </section>
 
 <section>
-<section id="slide-orgc59ff29">
-<h2 id="orgc59ff29">What is an index?</h2>
+<section id="slide-orgc909e4f">
+<h2 id="orgc909e4f">What is an index?</h2>
 <p>
 An index is just a data structure that makes the searching faster for a specific
 column in a database.
@@ -48,7 +48,7 @@ column in a database.
 </section>
 <section>
 <ul class="org-ul">
-<li><a id="org7dec70e"></a>What would happen without an index?<br />
+<li><a id="org38cd9ce"></a>What would happen without an index?<br />
 <p>
 To see if the row value matched the query, database software would have to look
 at every single row in the table.
@@ -56,7 +56,7 @@ at every single row in the table.
 </section>
 <section>
 </li>
-<li><a id="org87cc828"></a>Why not index every column?<br />
+<li><a id="org6068062"></a>Why not index every column?<br />
 <p>
 It takes up space, and the bigger your table is, the bigger your index will be.
 Another performance hit with indexes is that you must do the same actions on
@@ -68,13 +68,13 @@ whatever is in the table column covered by the index.
 </ul>
 
 </section>
-<section id="slide-org79de817">
-<h3 id="org79de817">Postgres Index Types</h3>
-<div class="outline-text-3" id="text-org79de817">
+<section id="slide-org452652f">
+<h3 id="org452652f">Postgres Index Types</h3>
+<div class="outline-text-3" id="text-org452652f">
 </div>
 </section>
-<section id="slide-org0d353a9">
-<h4 id="org0d353a9">Hash</h4>
+<section id="slide-orgdbd2030">
+<h4 id="orgdbd2030">Hash</h4>
 <p>
 A hash index, inverts the relationship between a primary key and a value in the
 table.
@@ -83,7 +83,7 @@ table.
 </section>
 <section>
 <ul class="org-ul">
-<li><a id="org70319be"></a>Supported Operators<br />
+<li><a id="org53ccf41"></a>Supported Operators<br />
 <ul>
 <li><code>=</code></li>
 
@@ -92,8 +92,8 @@ table.
 </ul>
 
 </section>
-<section id="slide-org4a29206">
-<h4 id="org4a29206">B-tree</h4>
+<section id="slide-orgd293251">
+<h4 id="orgd293251">B-tree</h4>
 <p>
 Balanced tree, <span class="underline">not</span> binary tree.
 </p>
@@ -117,7 +117,7 @@ Good explainer: <a href="https://rahulreddyr3.medium.com/indexing-in-postgresql-
 </section>
 <section>
 <ul class="org-ul">
-<li><a id="org4bfd551"></a>Supported Operators<br />
+<li><a id="orgb895a2e"></a>Supported Operators<br />
 <ul>
 <li><code>&lt;</code></li>
 <li><code>&lt;=</code></li>
@@ -134,12 +134,12 @@ Good explainer: <a href="https://rahulreddyr3.medium.com/indexing-in-postgresql-
 
 
 </section>
-<section id="slide-org5058d9b">
-<h4 id="org5058d9b">GIN</h4>
-<div class="outline-text-4" id="text-org5058d9b">
+<section id="slide-org3bfc1af">
+<h4 id="org3bfc1af">GIN</h4>
+<div class="outline-text-4" id="text-org3bfc1af">
 </div>
 <ul class="org-ul">
-<li><a id="org9706ca3"></a>Generalised Inverted Indexes<br />
+<li><a id="org56986bc"></a>Generalised Inverted Indexes<br />
 <ul>
 <li>Most commonly used for full text searching</li>
 <li>Good for when you have multiple values in a column, e.g <code>array</code>, <code>jsonb</code> types.</li>
@@ -157,7 +157,7 @@ Further reading:
 </section>
 <section>
 </li>
-<li><a id="org3bc2931"></a>Table<br />
+<li><a id="org9c05079"></a>Table<br />
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -188,7 +188,7 @@ Further reading:
 </section>
 <section>
 </li>
-<li><a id="orgb1a3c25"></a>Index<br />
+<li><a id="org148771e"></a>Index<br />
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -224,7 +224,7 @@ Further reading:
 </section>
 <section>
 </li>
-<li><a id="org5b130b3"></a>Supported operators<br />
+<li><a id="org904bd83"></a>Supported operators<br />
 <ul>
 <li><code>&lt;@</code></li>
 <li><code>@&gt;</code></li>
@@ -236,12 +236,12 @@ Further reading:
 </ul>
 
 </section>
-<section id="slide-org17a4dd6">
-<h4 id="org17a4dd6">GiST</h4>
-<div class="outline-text-4" id="text-org17a4dd6">
+<section id="slide-org86baa9c">
+<h4 id="org86baa9c">GiST</h4>
+<div class="outline-text-4" id="text-org86baa9c">
 </div>
 <ul class="org-ul">
-<li><a id="org517d140"></a>Generalised Search Tree<br />
+<li><a id="orgb86c174"></a>Generalised Search Tree<br />
 <p>
 Good for when a value of a row can overlap with the same column in another row.
 Think polygons on a map, or to return only rows where the polygon contains a
@@ -259,7 +259,7 @@ Further reading: <a href="https://medium.com/postgres-professional/indexes-in-po
 </section>
 <section>
 
-<div id="org72570b2" class="figure">
+<div id="org7bd862f" class="figure">
 <p><img src="./poly.jpg" alt="poly.jpg" />
 </p>
 </div>
@@ -267,28 +267,51 @@ Further reading: <a href="https://medium.com/postgres-professional/indexes-in-po
 </ul>
 
 </section>
-<section id="slide-org066a27e">
-<h4 id="org066a27e">SP-GiST</h4>
+<section id="slide-orgb5f1faa">
+<h4 id="orgb5f1faa">SP-GiST</h4>
+<div class="outline-text-4" id="text-orgb5f1faa">
+</div>
+<ul class="org-ul">
+<li><a id="org215478b"></a>Space partitioned GiST<br />
 <p>
-The name implies that this index type is similar to GiST, which is true but this works better for data
+As the name implies this index type is similar to GiST, but this works better for data
 where the values can be highly clustered like post codes or IP addresses.
 </p>
+</li>
+</ul>
 
 
 </section>
-<section id="slide-org6f6a4ee">
-<h4 id="org6f6a4ee">BRIN</h4>
+<section id="slide-org9b172af">
+<h4 id="org9b172af">BRIN</h4>
+<div class="outline-text-4" id="text-org9b172af">
+</div>
+<ul class="org-ul">
+<li><a id="org5a706d8"></a>Block range indexes<br />
+<p>
+When you have a huge dataset that is organised by dates, such as log events,
+BRIN indexes allow you to rapidly skip or eliminate a lot of the irrelevant
+data. BRIN indexes are also kept as smaller indexes in relation to the entire
+data size, making them an excellent choice for huge datasets.
+</p>
+
+<p>
+Docs: <a href="https://www.postgresql.org/docs/current/brin-intro.html">https://www.postgresql.org/docs/current/brin-intro.html</a>
+</p>
+</li>
+</ul>
+
 </section>
 </section>
 <section>
-<section id="slide-org7ecc046">
-<h2 id="org7ecc046">Python Implementation</h2>
+<section id="slide-orgcaf2f74">
+<h2 id="orgcaf2f74">Python Implementation</h2>
 <p>
 Example: A database table storing logins
 </p>
 </section>
-<section id="slide-orge6c0c2b">
-<h3 id="orge6c0c2b">Rows</h3>
+<section id="slide-org9cd26a5">
+<h3 id="org9cd26a5">Rows</h3>
 <p>
 Rows will be represented as a <code>namedtuple</code>.
 </p>
@@ -302,8 +325,8 @@ Rows will be represented as a <code>namedtuple</code>.
 </div>
 
 </section>
-<section id="slide-orge370a13">
-<h3 id="orge370a13">Tables</h3>
+<section id="slide-orgd1937bc">
+<h3 id="orgd1937bc">Tables</h3>
 <p>
 Tables will be represented as a Python <code>list</code>
 </p>
@@ -320,7 +343,7 @@ Tables will be represented as a Python <code>list</code>
     <span style="color: #bc6ec5;">)</span>,
     Login<span style="color: #bc6ec5;">(</span>
         email=<span style="color: #2d9574;">'joe@example.com'</span>,
-        date=datetime.date<span style="color: #2d9574;">(</span><span style="color: #a45bad;">2013</span>, <span style="color: #a45bad;">4</span>, <span style="color: #a45bad;">13</span><span style="color: #2d9574;">)</span>,
+        date=datetime.date<span style="color: #2d9574;">(</span><span style="color: #a45bad;">2013</span>, <span style="color: #a45bad;">11</span>, <span style="color: #a45bad;">3</span><span style="color: #2d9574;">)</span>,
         user_agent=<span style="color: #2d9574;">'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/531.0 (KHTML, like Gecko) Chrome/94.0.822.0 Safari/541.0'</span>,
         ip=<span style="color: #2d9574;">'22.12.189.17'</span>
     <span style="color: #bc6ec5;">)</span>
@@ -330,8 +353,8 @@ Tables will be represented as a Python <code>list</code>
 
 
 </section>
-<section id="slide-orgb37926e">
-<h4 id="orgb37926e">Postgres equivalent</h4>
+<section id="slide-orgf5fae2a">
+<h4 id="orgf5fae2a">Postgres equivalent</h4>
 <div class="org-src-container">
 
 <pre class="src src-sql"><span style="color: #4f97d7; font-weight: bold;">CREATE</span> <span style="color: #4f97d7; font-weight: bold;">TABLE</span> <span style="color: #4f97d7;">IF</span> <span style="color: #4f97d7; font-weight: bold;">NOT</span> <span style="color: #4f97d7;">EXISTS</span> <span style="color: #bc6ec5; font-weight: bold;">logins</span> <span style="color: #4f97d7;">(</span>
@@ -345,8 +368,8 @@ Tables will be represented as a Python <code>list</code>
 </div>
 
 </section>
-<section id="slide-org29ecd5e">
-<h4 id="org29ecd5e">Populate a "table"</h4>
+<section id="slide-org664e9a0">
+<h4 id="org664e9a0">Populate a "table"</h4>
 <div class="org-src-container">
 
 <pre class="src src-python">
@@ -373,12 +396,12 @@ pprint<span style="color: #4f97d7;">(</span>last_login<span style="color: #4f97d
 </div>
 
 <pre class="example">
-Login(email='mileskathryn@example.net', date=datetime.date(1984, 10, 9), user_agent='Mozilla/5.0 (iPad; CPU iPad OS 10_3_4 like Mac OS X) AppleWebKit/531.0 (KHTML, like Gecko) CriOS/44.0.812.0 Mobile/15W897 Safari/531.0', ip='115.60.254.20')
+Login(email='danielle38@example.net', date=datetime.date(1999, 5, 10), user_agent='Mozilla/5.0 (Linux; Android 1.6) AppleWebKit/535.0 (KHTML, like Gecko) Chrome/59.0.819.0 Safari/535.0', ip='162.135.61.234')
 </pre>
 
 </section>
-<section id="slide-orga99a58e">
-<h4 id="orga99a58e">Find a login by email address</h4>
+<section id="slide-org4b06c1e">
+<h4 id="org4b06c1e">Find a login by email address</h4>
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> timeit <span style="color: #4f97d7; font-weight: bold;">import</span> timeit
@@ -401,12 +424,12 @@ Login(email='mileskathryn@example.net', date=datetime.date(1984, 10, 9), user_ag
 </div>
 
 <pre class="example">
-4.3596248630055925
+4.259860292004305
 </pre>
 
 </section>
-<section id="slide-orgc0768bb">
-<h4 id="orgc0768bb">With a hash index</h4>
+<section id="slide-org7b11be8">
+<h4 id="org7b11be8">With a hash index</h4>
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #7590db;">h_i</span> = <span style="color: #4f97d7;">{</span>login.email: i <span style="color: #4f97d7; font-weight: bold;">for</span> i, login <span style="color: #4f97d7; font-weight: bold;">in</span> <span style="color: #4f97d7;">enumerate</span><span style="color: #bc6ec5;">(</span>table<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">}</span>
@@ -419,9 +442,9 @@ pprint<span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">dict</
 </div>
 
 <pre class="example">
-{'jasonhopkins@example.org': 0,
- 'jesus63@example.com': 2,
- 'shannonherman@example.org': 1}
+{'browncassandra@example.org': 0,
+ 'ksmith@example.net': 1,
+ 'nayala@example.org': 2}
 </pre>
 
 
@@ -436,7 +459,7 @@ pprint<span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">dict</
 </div>
 
 <pre class="example">
-0.0023106759908841923
+0.002157865004846826
 </pre>
 </section>
 </section>
