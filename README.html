@@ -21,15 +21,15 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#/slide-orgc064c1e">What is an index?</a>
+<li><a href="#/slide-org7e5f295">What is an index?</a>
 <ul>
-<li><a href="#/slide-org0b7a25b">Postgres Index Types</a></li>
+<li><a href="#/slide-org8bdf2be">Postgres Index Types</a></li>
 </ul>
 </li>
-<li><a href="#/slide-org67a10ba">Python Implementation</a>
+<li><a href="#/slide-org1559dcd">Python Implementation</a>
 <ul>
-<li><a href="#/slide-org80a8825">Rows</a></li>
-<li><a href="#/slide-org6eb50d7">Tables</a></li>
+<li><a href="#/slide-org9e9dbe6">Rows</a></li>
+<li><a href="#/slide-org83c54ea">Tables</a></li>
 </ul>
 </li>
 </ul>
@@ -38,8 +38,8 @@
 </section>
 
 <section>
-<section id="slide-orgc064c1e">
-<h2 id="orgc064c1e">What is an index?</h2>
+<section id="slide-org7e5f295">
+<h2 id="org7e5f295">What is an index?</h2>
 <p>
 An index is just a data structure that makes the searching faster for a specific
 column in a database.
@@ -48,7 +48,7 @@ column in a database.
 </section>
 <section>
 <ul class="org-ul">
-<li><a id="orgefd6ad1"></a>What would happen without an index?<br />
+<li><a id="org464aaf6"></a>What would happen without an index?<br />
 <p>
 To see if the row value matched the query, database software would have to look
 at every single row in the table.
@@ -56,7 +56,7 @@ at every single row in the table.
 </section>
 <section>
 </li>
-<li><a id="org6b09d11"></a>Why not index every column?<br />
+<li><a id="org7a579a7"></a>Why not index every column?<br />
 <p>
 It takes up space, and the bigger your table is, the bigger your index will be.
 Another performance hit with indexes is that you must do the same actions on
@@ -68,13 +68,13 @@ whatever is in the table column covered by the index.
 </ul>
 
 </section>
-<section id="slide-org0b7a25b">
-<h3 id="org0b7a25b">Postgres Index Types</h3>
-<div class="outline-text-3" id="text-org0b7a25b">
+<section id="slide-org8bdf2be">
+<h3 id="org8bdf2be">Postgres Index Types</h3>
+<div class="outline-text-3" id="text-org8bdf2be">
 </div>
 </section>
-<section id="slide-org5e419fd">
-<h4 id="org5e419fd">Hash</h4>
+<section id="slide-org41025b6">
+<h4 id="org41025b6">Hash</h4>
 <p>
 A hash index, inverts the relationship between a primary key and a value in the
 table.
@@ -83,7 +83,7 @@ table.
 </section>
 <section>
 <ul class="org-ul">
-<li><a id="org3561494"></a>Supported Operators<br />
+<li><a id="org846a4a4"></a>Supported Operators<br />
 <ul>
 <li><code>=</code></li>
 
@@ -92,8 +92,8 @@ table.
 </ul>
 
 </section>
-<section id="slide-org610b235">
-<h4 id="org610b235">B-tree</h4>
+<section id="slide-orgc7cd5a4">
+<h4 id="orgc7cd5a4">B-tree</h4>
 <p>
 Balanced tree, <span class="underline">not</span> binary tree.
 </p>
@@ -117,7 +117,7 @@ Good explainer: <a href="https://rahulreddyr3.medium.com/indexing-in-postgresql-
 </section>
 <section>
 <ul class="org-ul">
-<li><a id="orgd74d810"></a>Supported Operators<br />
+<li><a id="orgc4704c6"></a>Supported Operators<br />
 <ul>
 <li><code>&lt;</code></li>
 <li><code>&lt;=</code></li>
@@ -134,12 +134,12 @@ Good explainer: <a href="https://rahulreddyr3.medium.com/indexing-in-postgresql-
 
 
 </section>
-<section id="slide-org81f098e">
-<h4 id="org81f098e">GIN</h4>
-<div class="outline-text-4" id="text-org81f098e">
+<section id="slide-org0756af1">
+<h4 id="org0756af1">GIN</h4>
+<div class="outline-text-4" id="text-org0756af1">
 </div>
 <ul class="org-ul">
-<li><a id="org3f5cd3c"></a>Generalised Inverted Indexes<br />
+<li><a id="org0aeb06c"></a>Generalised Inverted Indexes<br />
 <ul>
 <li>Most commonly used for full text searching</li>
 <li>Good for when you have multiple values in a column, e.g <code>array</code>, <code>jsonb</code> types.</li>
@@ -157,7 +157,7 @@ Further reading:
 </section>
 <section>
 </li>
-<li><a id="org049bc24"></a>Table<br />
+<li><a id="org13bf2f8"></a>Table<br />
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -188,7 +188,7 @@ Further reading:
 </section>
 <section>
 </li>
-<li><a id="orgbc802fb"></a>Index<br />
+<li><a id="org3942940"></a>Index<br />
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -224,7 +224,7 @@ Further reading:
 </section>
 <section>
 </li>
-<li><a id="org27ad133"></a>Supported operators<br />
+<li><a id="orgc9dc38c"></a>Supported operators<br />
 <ul>
 <li><code>&lt;@</code></li>
 <li><code>@&gt;</code></li>
@@ -236,12 +236,12 @@ Further reading:
 </ul>
 
 </section>
-<section id="slide-orgc4bc584">
-<h4 id="orgc4bc584">GiST</h4>
-<div class="outline-text-4" id="text-orgc4bc584">
+<section id="slide-org7a27431">
+<h4 id="org7a27431">GiST</h4>
+<div class="outline-text-4" id="text-org7a27431">
 </div>
 <ul class="org-ul">
-<li><a id="orga135d21"></a>Generalised Search Tree<br />
+<li><a id="orgf03c92c"></a>Generalised Search Tree<br />
 <p>
 Good for when a value of a row can overlap with the same column in another row.
 Think polygons on a map, or to return only rows where the polygon contains a
@@ -259,7 +259,7 @@ Further reading: <a href="https://medium.com/postgres-professional/indexes-in-po
 </section>
 <section>
 
-<div id="org5af3d8e" class="figure">
+<div id="org6380fe2" class="figure">
 <p><img src="./poly.jpg" alt="poly.jpg" />
 </p>
 </div>
@@ -267,12 +267,12 @@ Further reading: <a href="https://medium.com/postgres-professional/indexes-in-po
 </ul>
 
 </section>
-<section id="slide-orge7c93f7">
-<h4 id="orge7c93f7">SP-GiST</h4>
-<div class="outline-text-4" id="text-orge7c93f7">
+<section id="slide-org4ccb131">
+<h4 id="org4ccb131">SP-GiST</h4>
+<div class="outline-text-4" id="text-org4ccb131">
 </div>
 <ul class="org-ul">
-<li><a id="orgba4d309"></a>Space partitioned GiST<br />
+<li><a id="org4b9efb8"></a>Space partitioned GiST<br />
 <p>
 As the name implies this index type is similar to GiST, but this works better for data
 where the values can be highly clustered like post codes or IP addresses.
@@ -282,12 +282,12 @@ where the values can be highly clustered like post codes or IP addresses.
 
 
 </section>
-<section id="slide-orgd8847bb">
-<h4 id="orgd8847bb">BRIN</h4>
-<div class="outline-text-4" id="text-orgd8847bb">
+<section id="slide-org59a09e2">
+<h4 id="org59a09e2">BRIN</h4>
+<div class="outline-text-4" id="text-org59a09e2">
 </div>
 <ul class="org-ul">
-<li><a id="org8f7357f"></a>Block range indexes<br />
+<li><a id="orgef1ef40"></a>Block range indexes<br />
 <p>
 When you have a huge dataset that is organised by dates, such as log events,
 BRIN indexes allow you to rapidly skip or eliminate a lot of the irrelevant
@@ -304,8 +304,8 @@ Docs: <a href="https://www.postgresql.org/docs/current/brin-intro.html">https://
 </section>
 </section>
 <section>
-<section id="slide-org67a10ba">
-<h2 id="org67a10ba">Python Implementation</h2>
+<section id="slide-org1559dcd">
+<h2 id="org1559dcd">Python Implementation</h2>
 <p>
 Example: A database table storing logins.
 </p>
@@ -314,8 +314,8 @@ Example: A database table storing logins.
 Optimised using a Hash index
 </p>
 </section>
-<section id="slide-org80a8825">
-<h3 id="org80a8825">Rows</h3>
+<section id="slide-org9e9dbe6">
+<h3 id="org9e9dbe6">Rows</h3>
 <p>
 Rows will be represented as a <code>namedtuple</code>.
 </p>
@@ -330,8 +330,8 @@ Rows will be represented as a <code>namedtuple</code>.
 </div>
 
 </section>
-<section id="slide-org6eb50d7">
-<h3 id="org6eb50d7">Tables</h3>
+<section id="slide-org83c54ea">
+<h3 id="org83c54ea">Tables</h3>
 <p>
 Tables will be represented as a Python <code>list</code>
 </p>
@@ -359,8 +359,8 @@ Tables will be represented as a Python <code>list</code>
 
 
 </section>
-<section id="slide-org4c69d9f">
-<h4 id="org4c69d9f">Postgres equivalent</h4>
+<section id="slide-org4bd851d">
+<h4 id="org4bd851d">Postgres equivalent</h4>
 <div class="org-src-container">
 
 <pre class="src src-sql"><span style="color: #4f97d7; font-weight: bold;">CREATE</span> <span style="color: #4f97d7; font-weight: bold;">TABLE</span> <span style="color: #4f97d7;">IF</span> <span style="color: #4f97d7; font-weight: bold;">NOT</span> <span style="color: #4f97d7;">EXISTS</span> <span style="color: #bc6ec5; font-weight: bold;">logins</span> <span style="color: #4f97d7;">(</span>
@@ -374,8 +374,8 @@ Tables will be represented as a Python <code>list</code>
 </div>
 
 </section>
-<section id="slide-orge323f50">
-<h4 id="orge323f50">Populate a "table"</h4>
+<section id="slide-orgc7bd3ee">
+<h4 id="orgc7bd3ee">Populate a "table"</h4>
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> pprint <span style="color: #4f97d7; font-weight: bold;">import</span> pprint
@@ -406,12 +406,12 @@ pprint<span style="color: #4f97d7;">(</span>last_login<span style="color: #4f97d
 </div>
 
 <pre class="example">
-Login(email='fhill@example.org', date=datetime.datetime(2022, 3, 22, 17, 31, 7), user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/533.0 (KHTML, like Gecko) Chrome/38.0.830.0 Safari/533.0', ip='64.46.108.84')
+Login(email='mariah76@example.com', date=datetime.datetime(2022, 3, 22, 18, 40, 36), user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 4_2_1 like Mac OS X) AppleWebKit/532.2 (KHTML, like Gecko) CriOS/14.0.869.0 Mobile/29G661 Safari/532.2', ip='21.16.178.224')
 </pre>
 
 </section>
-<section id="slide-orgff9b8bb">
-<h4 id="orgff9b8bb">Find a login by email address</h4>
+<section id="slide-orgc392431">
+<h4 id="orgc392431">Find a login by email address</h4>
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> timeit <span style="color: #4f97d7; font-weight: bold;">import</span> timeit
@@ -426,7 +426,7 @@ Login(email='fhill@example.org', date=datetime.datetime(2022, 3, 22, 17, 31, 7),
 <div class="org-src-container">
 
 <pre class="src src-python">timeit<span style="color: #4f97d7;">(</span>
-    <span style="color: #2d9574;">'find_by_email(table, last_login.email)'</span>,
+    <span style="color: #2d9574;">'find_by_email(table, random_login.email)'</span>,
     <span style="color: #4f97d7;">globals</span>=<span style="color: #4f97d7;">globals</span><span style="color: #bc6ec5;">()</span>,
     number=<span style="color: #a45bad;">10000</span>
 <span style="color: #4f97d7;">)</span>
@@ -434,15 +434,16 @@ Login(email='fhill@example.org', date=datetime.datetime(2022, 3, 22, 17, 31, 7),
 </div>
 
 <pre class="example">
-3.6173106500064023
+3.169402518993593
 </pre>
 
 </section>
-<section id="slide-org696ee66">
-<h4 id="org696ee66">With a Hash index</h4>
+<section id="slide-org5bfd54a">
+<h4 id="org5bfd54a">With a Hash index</h4>
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #7590db;">h_i</span> = <span style="color: #4f97d7;">{</span>login.email: i <span style="color: #4f97d7; font-weight: bold;">for</span> i, login <span style="color: #4f97d7; font-weight: bold;">in</span> <span style="color: #4f97d7;">enumerate</span><span style="color: #bc6ec5;">(</span>table<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">}</span>
+
 <span style="color: #4f97d7; font-weight: bold;">def</span> <span style="color: #bc6ec5; font-weight: bold;">find_by_email_with_hash_index</span><span style="color: #4f97d7;">(</span>t, email, hash_index<span style="color: #4f97d7;">)</span>:
     <span style="color: #4f97d7; font-weight: bold;">return</span> table<span style="color: #4f97d7;">[</span>hash_index<span style="color: #bc6ec5;">[</span>email<span style="color: #bc6ec5;">]</span><span style="color: #4f97d7;">]</span>
 
@@ -452,7 +453,9 @@ pprint<span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">dict</
 </div>
 
 <pre class="example">
-{'lisataylor@example.org': 0, 'phess@example.com': 2, 'taguilar@example.net': 1}
+{'amanda64@example.org': 2,
+ 'andersonchristopher@example.org': 1,
+ 'kunderwood@example.org': 0}
 </pre>
 
 
@@ -467,12 +470,12 @@ pprint<span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">dict</
 </div>
 
 <pre class="example">
-0.0046695820055902
+0.004263035996700637
 </pre>
 
 </section>
-<section id="slide-orgc059a09">
-<h4 id="orgc059a09">With a B-Tree</h4>
+<section id="slide-org5458d3a">
+<h4 id="org5458d3a">With a B-Tree</h4>
 <p>
 Exercise left to the reader, would look almost the same
 as above except you'd have to watch me implement a Balanced Tree.
@@ -483,11 +486,12 @@ You could try the Python <code>heapq</code> standard library if you want to try.
 </p>
 
 </section>
-<section id="slide-orge93f3a3">
-<h4 id="orge93f3a3">With a GiST</h4>
+<section id="slide-orge4c55aa">
+<h4 id="orge4c55aa">With a GIN</h4>
 <p>
-A GiST doesn't make sense for logins so let's make a blog post table.
+A GIN doesn't make sense for logins so let's make a blog post table.
 </p>
+
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #7590db;">Blog</span> = namedtuple<span style="color: #4f97d7;">(</span>
@@ -508,34 +512,32 @@ pprint<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">[</spa
 </pre>
 </div>
 
-<pre class="example" id="orge070d4c">
-[{'body': 'Knowledge collection source. '
-          'Responsibility might model '
-          'article. Hope information '
-          'address trade like.',
-  'tags': ['worry', 'heart', 'sing'],
-  'title': 'News story goal night '
-           'computer system discover '
-           'interview candidate sister '
-           'I.'},
- {'body': 'Those focus include task '
-          'southern. Pass study '
-          'challenge us care themselves '
-          'method. Manage agreement '
-          'admit.',
-  'tags': ['worry', 'from',
-           'investment'],
-  'title': 'Expect page red order '
-           'including next run behavior '
-           'cold explain.'}]
+<pre class="example" id="orgfb3d865">
+[{'body': 'It Mrs chance. Cup instead '
+          'around involve old I.',
+  'tags': ['stop', 'budget', 'serious'],
+  'title': 'Your treatment boy '
+           'certainly human perhaps '
+           'beat star interesting '
+           'military.'},
+ {'body': 'Wait similar off clear '
+          'interview human. Vote today '
+          'would want left.',
+  'tags': ['politics', 'nature',
+           'herself'],
+  'title': 'Able authority state '
+           'community imagine eight '
+           'again picture claim TV '
+           'magazine reality want '
+           'toward.'}]
 </pre>
 
 
 
 
 </section>
-<section id="slide-orgef38bc0">
-<h4 id="orgef38bc0">Find by tag</h4>
+<section id="slide-orgd7d0a1d">
+<h4 id="orgd7d0a1d">Find by tag</h4>
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> timeit <span style="color: #4f97d7; font-weight: bold;">import</span> timeit
@@ -562,12 +564,12 @@ timeit<span style="color: #4f97d7;">(</span>
 </div>
 
 <pre class="example">
-4.431407541997032
+5.136278695004876
 </pre>
 
 </section>
-<section id="slide-org38913fe">
-<h4 id="org38913fe">With GIN</h4>
+<section id="slide-org3e1ef68">
+<h4 id="org3e1ef68">With GIN</h4>
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">from</span> collections <span style="color: #4f97d7; font-weight: bold;">import</span> defaultdict
@@ -597,35 +599,36 @@ Peek at index
 </pre>
 </div>
 
-<pre class="example" id="orgbda2fc0">
-{'worry': [0, 1, 4, 11, 15, 19, 23, 24, 25, 28, 29, 36, 39,
-           40, 41, 42, 43, 45, 46, 48, 52, 57, 58, 59, 60,
-           64, 68, 89, 102, 103, 109, 122, 123, 126, 128,
-           130, 132, 143, 146, 148, 150, 151, 153, 164, 165,
-           181, 184, 185, 187, 189, 192, 194, 197, 205, 212,
-           213, 214, 215, 224, 233, 240, 241, 242, 243, 249,
-           250, 253, 256, 265, 266, 267, 270, 282, 283, 284,
-           292, 296, 298, 299, 301, 310, 315, 317, 318, 321,
-           323, 325, 330, 332, 334, 336, 337, 339, 345, 348,
-           349, 351, 357, 358, 359, 361, 364, 368, 374, 376,
-           377, 390, 392, 395, 397, 399, 403, 406, 407, 409,
-           411, 412, 413, 415, 417, 420, 422, 431, 433, 441,
-           445, 453, 454, 456, 458, 468, 471, 473, 475, 481,
-           482, 483, 485, 488, 489, 490, 496, 498, 503, 504,
-           517, 521, 522, 528, 531, 535, 538, 541, 549, 550,
-           553, 554, 561, 565, 569, 579, 580, 582, 585, 586,
-           590, 595, 599, 600, 601, 610, 615, 620, 623, 627,
-           628, 631, 632, 633, 635, 637, 638, 640, 641, 643,
-           644, 648, 652, 654, 656, 657, 660, 665, 671, 690,
-           692, 699, 707, 712, 713, 717, 720, 722, 731, 738,
-           739, 753, 754, 756, 757, 758, 761, 765, 768, 780,
-           783, 784, 787, 789, 790, 792, 794, 795, 796, 802,
-           804, 805, 808, 811, 817, 820, 826, 834, 835, 838,
-           842, 845, 848, 858, 861, 862, 863, 865, 867, 868,
-           870, 873, 879, 884, 889, 890, 896, 897, 899, 902,
-           909, 910, 913, 914, 916, 918, 919, 920, 922, 923,
-           925, 926, 931, 932, 950, 956, 962, 964, 965, 966,
-           969, 974, 976, 977, 979, 984, 986, 992, 994]}
+<pre class="example" id="org9d25899">
+{'stop': [0, 2, 4, 5, 7, 8, 10, 11, 14, 15, 17, 22, 23, 30,
+          32, 35, 37, 38, 39, 44, 45, 48, 55, 56, 63, 65,
+          66, 70, 71, 72, 78, 79, 82, 83, 88, 101, 109, 110,
+          111, 116, 125, 127, 130, 131, 132, 133, 135, 139,
+          148, 153, 155, 156, 158, 164, 169, 175, 176, 177,
+          179, 182, 192, 196, 198, 201, 209, 213, 216, 221,
+          223, 226, 230, 233, 234, 237, 242, 243, 244, 247,
+          249, 251, 253, 259, 260, 265, 268, 269, 271, 273,
+          280, 284, 285, 286, 292, 293, 298, 305, 314, 317,
+          320, 327, 329, 330, 331, 333, 335, 337, 340, 343,
+          344, 355, 356, 357, 359, 379, 383, 384, 387, 390,
+          395, 398, 401, 404, 408, 415, 416, 418, 421, 428,
+          429, 436, 444, 453, 456, 458, 461, 462, 469, 470,
+          472, 473, 481, 484, 485, 487, 490, 491, 498, 499,
+          500, 502, 511, 512, 520, 522, 525, 526, 527, 531,
+          536, 541, 543, 545, 548, 552, 561, 564, 567, 569,
+          573, 580, 581, 594, 595, 599, 601, 604, 605, 606,
+          619, 620, 626, 627, 630, 632, 636, 637, 640, 648,
+          649, 653, 658, 661, 666, 672, 676, 680, 685, 688,
+          689, 693, 694, 701, 705, 706, 709, 712, 713, 714,
+          716, 721, 722, 727, 734, 736, 740, 741, 742, 744,
+          745, 751, 752, 753, 756, 760, 763, 765, 766, 768,
+          770, 773, 775, 777, 780, 783, 788, 793, 797, 798,
+          799, 804, 809, 819, 829, 834, 836, 841, 849, 856,
+          858, 859, 862, 863, 867, 871, 872, 882, 887, 889,
+          890, 892, 899, 906, 912, 914, 918, 919, 922, 931,
+          933, 934, 939, 942, 945, 948, 951, 954, 956, 957,
+          960, 963, 964, 968, 969, 970, 979, 980, 982, 985,
+          988, 992, 998, 999]}
 </pre>
 
 
@@ -638,31 +641,21 @@ Peek at the distribution of tags to blog posts
 
 <div class="org-src-container">
 
-<pre class="src src-python">pprint<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">{</span>k: <span style="color: #4f97d7;">len</span><span style="color: #2d9574;">(</span>v<span style="color: #2d9574;">)</span> <span style="color: #4f97d7; font-weight: bold;">for</span> k, v <span style="color: #4f97d7; font-weight: bold;">in</span> gist.items<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">}</span>, width=<span style="color: #a45bad;">70</span>, compact=<span style="color: #a45bad;">True</span><span style="color: #4f97d7;">)</span>
+<pre class="src src-python">pprint<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">{</span>k: <span style="color: #4f97d7;">len</span><span style="color: #2d9574;">(</span>v<span style="color: #2d9574;">)</span> <span style="color: #4f97d7; font-weight: bold;">for</span> k, v <span style="color: #4f97d7; font-weight: bold;">in</span> gin.items<span style="color: #2d9574;">()</span><span style="color: #bc6ec5;">}</span>, width=<span style="color: #a45bad;">70</span>, compact=<span style="color: #a45bad;">True</span><span style="color: #4f97d7;">)</span>
 </pre>
 </div>
 
-<pre class="example" id="org821f10a">
-{'about': 927,
- 'although': 888,
- 'bring': 318,
- 'cause': 894,
- 'child': 300,
- 'consider': 936,
- 'could': 831,
- 'growth': 295,
- 'house': 306,
- 'moment': 303,
- 'now': 915,
- 'party': 846,
- 'player': 283,
- 'professor': 296,
- 'require': 888,
- 'say': 888,
- 'she': 299,
- 'song': 293,
- 'study': 307,
- 'such': 987}
+<pre class="example" id="org64a6e56">
+{'budget': 308,
+ 'herself': 293,
+ 'hope': 274,
+ 'identify': 326,
+ 'nature': 294,
+ 'our': 315,
+ 'politics': 329,
+ 'serious': 271,
+ 'stop': 292,
+ 'want': 298}
 </pre>
 
 
@@ -671,7 +664,7 @@ Peek at the distribution of tags to blog posts
 </section>
 <section>
 <ul class="org-ul">
-<li><a id="org31d84e7"></a>Timing with the index<br />
+<li><a id="org63e1f8c"></a>Timing with the index<br />
 <div class="org-src-container">
 
 <pre class="src src-python"><span style="color: #4f97d7; font-weight: bold;">print</span><span style="color: #4f97d7;">(</span>f<span style="color: #2d9574;">"finding tag: {tag_to_find}"</span><span style="color: #4f97d7;">)</span>
@@ -682,23 +675,19 @@ timeit<span style="color: #4f97d7;">(</span>
 <span style="color: #4f97d7;">)</span>
 </pre>
 </div>
-
-<pre class="example">
-0.03469697400578298
-</pre>
 </li>
 </ul>
 
 </section>
-<section id="slide-orga133e83">
-<h4 id="orga133e83">GiST and SP-GiST</h4>
+<section id="slide-org657a8f9">
+<h4 id="org657a8f9">GiST and SP-GiST</h4>
 <p>
 A contrived example would take too long to describe here.
 </p>
 
 </section>
-<section id="slide-orga4fe9cd">
-<h4 id="orga4fe9cd">With a BRIN?</h4>
+<section id="slide-orgdbe544e">
+<h4 id="orgdbe544e">With a BRIN?</h4>
 <p>
 Block range indexes
 </p>
@@ -732,7 +721,7 @@ What if we want to get all logins that happened after certain hour?
 </div>
 
 <pre class="example">
-finding logins after 2022-03-22T16:22:00
+finding logins after 2022-03-22T16:20:00
 </pre>
 
 
@@ -749,7 +738,7 @@ finding logins after 2022-03-22T16:22:00
 </div>
 
 <pre class="example">
-5.5237757849972695
+10.236606755002867
 </pre>
 
 
@@ -782,11 +771,11 @@ pprint<span style="color: #4f97d7;">(</span><span style="color: #4f97d7;">list</
 </div>
 
 <pre class="example">
-[(datetime.datetime(2022, 3, 22, 14, 44), 0),
- (datetime.datetime(2022, 3, 22, 14, 45), 32),
- (datetime.datetime(2022, 3, 22, 14, 46), 92),
- (datetime.datetime(2022, 3, 22, 14, 47), 152),
- (datetime.datetime(2022, 3, 22, 14, 48), 212)]
+[(datetime.datetime(2022, 3, 22, 15, 53), 0),
+ (datetime.datetime(2022, 3, 22, 15, 54), 3),
+ (datetime.datetime(2022, 3, 22, 15, 55), 63),
+ (datetime.datetime(2022, 3, 22, 15, 56), 123),
+ (datetime.datetime(2022, 3, 22, 15, 57), 183)]
 </pre>
 
 
@@ -818,7 +807,7 @@ Time it
 
 
 <pre class="example">
-0.16611792900948785
+0.39986849699926097
 </pre>
 </section>
 </section>
@@ -848,6 +837,7 @@ pdfSeparateFragments: true,
 overview: true,
 width: 1400,
 height: 1000,
+minScale: 0.20,
 
 transition: 'convex',
 transitionSpeed: 'default',
