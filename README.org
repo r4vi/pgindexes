@@ -2,7 +2,7 @@
 #+OPTIONS: ^:niL
 #+OPTIONS: toc:2
 #+OPTIONS: prop:t
-#+OPTIONS: num:nil
+#+OPTIONS: num:nil timestamp:nil
 #+STARTUP: showeverything
 #+OPTIONS: reveal_width:1400 reveal_height:1000
 #+AUTHOR: 
