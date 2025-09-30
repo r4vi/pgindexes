@@ -42,11 +42,15 @@ jobs:
             (package-refresh-contents)
             (package-install 'org)
             (package-install 'htmlize)
-            (package-install 'ox-reveal))"
+            (package-install 'ox-reveal)
+            (package-initialize))"
 
       - name: Convert README.org to HTML with Reveal.js
         run: |
           emacs --batch --eval "(progn
+            (require 'package)
+            (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t)
+            (package-initialize)
             (require 'org)
             (require 'ox-reveal)
             (find-file \"README.org\")
@@ -56,6 +60,9 @@ jobs:
         run: |
           if [ ! -f "README.html" ]; then
             emacs --batch --eval "(progn
+              (require 'package)
+              (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t)
+              (package-initialize)
               (require 'org)
               (find-file \"README.org\")
               (org-html-export-to-html))"
