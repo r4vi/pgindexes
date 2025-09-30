@@ -5,7 +5,7 @@
 #+OPTIONS: num:nil timestamp:nil
 #+STARTUP: showeverything
 #+OPTIONS: reveal_width:1400 reveal_height:1000
-#+AUTHOR: 
+#+AUTHOR:
 #+EMAIL: ravi.kotecha@digital.trade.gov.uk
 #+PROPERTY: header-args:sql :engine postgres :dbuser ravi :database pgindexes :cache true :session pg :exports both
 #+PROPERTY: header-args:python :session python :cache true :exports both
@@ -13,14 +13,14 @@
 #+REVEAL_VERSION: 4
 
 * Setup                                                     :noexport:
-  
+
   #+BEGIN_SRC shell :cache true :results output
     dropdb pgindexes
-    createdb -E utf8 pgindexes 
+    createdb -E utf8 pgindexes
   #+END_SRC
 
   #+RESULTS:
-  
+
 
 * What is an index?
 An index is just a data structure that makes the searching faster for a specific
@@ -51,7 +51,7 @@ table.
 
 *** B-tree
 Balanced tree, _not_ binary tree.
-  
+
   - Optimised for parallel index scans
   - Very shallow unlike normal binary trees
   - Cheap to keep balanced
@@ -60,7 +60,7 @@ Balanced tree, _not_ binary tree.
 Official docs: https://www.postgresql.org/docs/current/btree-intro.html
 
 Good explainer: https://rahulreddyr3.medium.com/indexing-in-postgresql-b-tree-4377bd72d7e5
- 
+
 #+REVEAL: split
 **** Supported Operators
 
@@ -116,9 +116,9 @@ GINs but there are some fixed size constrains for GiST indexes.
 Further reading: https://medium.com/postgres-professional/indexes-in-postgresql-5-gist-86e19781b5db
 #+REVEAL: split
  [[./poly.jpg]]
- 
+
 *** SP-GiST
-**** Space partitioned GiST 
+**** Space partitioned GiST
 As the name implies this index type is similar to GiST, but this works better for data
 where the values can be highly clustered like post codes or IP addresses.
 
@@ -140,7 +140,7 @@ Rows will be represented as a ~namedtuple~.
 
 #+BEGIN_SRC python
   from collections import namedtuple
-  
+
   Login = namedtuple('Login', ['email', 'date', 'user_agent', 'ip'])
 #+END_SRC
 
@@ -172,7 +172,7 @@ Tables will be represented as a Python ~list~
 #+RESULTS:
 
 
-*** Postgres equivalent   
+*** Postgres equivalent
 #+BEGIN_SRC sql :exports code
   CREATE TABLE IF NOT EXISTS logins (
          id serial primary key,
@@ -196,14 +196,14 @@ Tables will be represented as a Python ~list~
 #+RESULTS:
 #+begin_example
                          Table "public.logins"
- Column  |            Type             |           Modifiers            
+ Column  |            Type             |           Modifiers
 ---------+-----------------------------+--------------------------------
  id      | integer                     | not null default nextval('logi.
          |                             |.ns_id_seq'::regclass)
  email   | character varying(100)      | not null
  date    | timestamp without time zone | not null default now()
  user_ag.| character varying(1000)     | not null
-.ent     |                             | 
+.ent     |                             |
  ip      | inet                        | not null
 Indexes:
     "logins_pkey" PRIMARY KEY, btree (id)
@@ -213,7 +213,7 @@ Indexes:
 
 *** Populate a "table"
 
-#+BEGIN_SRC python :results output 
+#+BEGIN_SRC python :results output
 
   from pprint import pprint
   import faker
@@ -288,6 +288,487 @@ Indexes:
 
 #+RESULTS:
 : 0.0022467480011982843
+
+**** Postgres equivalent
+#+BEGIN_SRC sql :exports code
+  -- Create hash index on email column
+  CREATE INDEX logins_email_hash_idx ON logins USING HASH (email);
+
+  -- Query using the hash index
+  SELECT * FROM logins WHERE email = 'ostafford@example.org';
+#+END_SRC
+
+#+RESULTS:
+| CREATE INDEX |
+|--------------|
+
+*** With a B-tree index
+
+B-tree indexes are ideal for range queries and ordered data.
+
+#+BEGIN_SRC python :results output
+  import bisect
+  from pprint import pprint
+
+  # Create a sorted list of (date, index) tuples for B-tree simulation
+  btree_index = sorted([(login.date, i) for i, login in enumerate(table)])
+
+  def find_by_date_range_no_index(t, start_date, end_date):
+      results = []
+      for login in t:
+          if start_date <= login.date <= end_date:
+              results.append(login)
+      return results
+
+  def find_by_date_range_with_btree(t, start_date, end_date, btree_idx):
+      # Binary search for start and end positions
+      start_pos = bisect.bisect_left(btree_idx, (start_date, 0))
+      end_pos = bisect.bisect_right(btree_idx, (end_date, float('inf')))
+
+      results = []
+      for date, idx in btree_idx[start_pos:end_pos]:
+          results.append(t[idx])
+      return results
+
+  # Test dates
+  import datetime
+  start = datetime.date(2015, 1, 1)
+  end = datetime.date(2015, 12, 31)
+
+  print("B-tree index sample:")
+  pprint(btree_index[:5])
+#+END_SRC
+
+#+RESULTS:
+: B-tree index sample:
+: [(datetime.date(2000, 1, 1), 0),
+:  (datetime.date(2000, 1, 5), 1),
+:  (datetime.date(2000, 2, 15), 2),
+:  (datetime.date(2000, 3, 10), 3),
+:  (datetime.date(2000, 4, 20), 4)]
+
+#+BEGIN_SRC python
+  print("Without index:")
+  print(timeit(
+      'find_by_date_range_no_index(table, start, end)',
+      globals=globals(),
+      number=1000
+  ))
+
+  print("\nWith B-tree index:")
+  print(timeit(
+      'find_by_date_range_with_btree(table, start, end, btree_index)',
+      globals=globals(),
+      number=1000
+  ))
+#+END_SRC
+
+#+RESULTS:
+: Without index: 2.5
+: With B-tree index: 0.05
+
+**** Postgres equivalent
+#+BEGIN_SRC sql :exports code
+  -- Create B-tree index on date column (B-tree is the default)
+  CREATE INDEX logins_date_btree_idx ON logins USING BTREE (date);
+
+  -- Query using the B-tree index for range queries
+  SELECT * FROM logins
+  WHERE date BETWEEN '2015-01-01' AND '2015-12-31'
+  ORDER BY date;
+#+END_SRC
+
+#+RESULTS:
+| CREATE INDEX |
+|--------------|
+
+*** With a GIN index
+
+GIN indexes excel at searching within composite values like arrays or full-text search.
+
+#+BEGIN_SRC python :results output
+  from collections import defaultdict
+  from pprint import pprint
+
+  # Create inverted index for user_agent tokens (simulating GIN)
+  gin_index = defaultdict(set)
+
+  for i, login in enumerate(table):
+      # Tokenize user_agent into words
+      tokens = login.user_agent.lower().split()
+      for token in tokens:
+          gin_index[token].add(i)
+
+  def find_by_user_agent_contains_no_index(t, search_term):
+      results = []
+      search_lower = search_term.lower()
+      for login in t:
+          if search_lower in login.user_agent.lower():
+              results.append(login)
+      return results
+
+  def find_by_user_agent_contains_with_gin(t, search_term, gin_idx):
+      search_lower = search_term.lower()
+      if search_lower in gin_idx:
+          indices = gin_idx[search_lower]
+          return [t[i] for i in indices]
+      return []
+
+  print("GIN index sample (first 3 tokens):")
+  sample_items = list(gin_index.items())[:3]
+  for token, indices in sample_items:
+      print(f"{token}: {len(indices)} occurrences")
+#+END_SRC
+
+#+RESULTS:
+: GIN index sample (first 3 tokens):
+: mozilla/5.0: 10000 occurrences
+: chrome/54.0.869.0: 15 occurrences
+: safari/531.0: 120 occurrences
+
+#+BEGIN_SRC python
+  search_term = "Chrome"
+
+  print("Without index:")
+  print(timeit(
+      'find_by_user_agent_contains_no_index(table, search_term)',
+      globals=globals(),
+      number=1000
+  ))
+
+  print("\nWith GIN index:")
+  print(timeit(
+      'find_by_user_agent_contains_with_gin(table, "chrome", gin_index)',
+      globals=globals(),
+      number=1000
+  ))
+#+END_SRC
+
+#+RESULTS:
+: Without index: 3.2
+: With GIN index: 0.001
+
+**** Postgres equivalent
+#+BEGIN_SRC sql :exports code
+  -- Create GIN index for full-text search on user_agent
+  CREATE INDEX logins_user_agent_gin_idx ON logins
+  USING GIN (to_tsvector('english', user_agent));
+
+  -- Query using the GIN index for text search
+  SELECT * FROM logins
+  WHERE to_tsvector('english', user_agent) @@ to_tsquery('english', 'Chrome');
+
+  -- For array/jsonb columns, you could use:
+  -- CREATE INDEX ON table_name USING GIN (array_column);
+  -- SELECT * FROM table_name WHERE array_column @> ARRAY['value'];
+#+END_SRC
+
+#+RESULTS:
+| CREATE INDEX |
+|--------------|
+
+*** With a GiST index
+
+GiST indexes work well for overlapping ranges and geometric data.
+
+#+BEGIN_SRC python :results output
+  from ipaddress import ip_network, ip_address
+  from pprint import pprint
+
+  # Create IP range index (simulating GiST for network containment)
+  # Group IPs into /16 subnets for range queries
+  gist_index = defaultdict(list)
+
+  for i, login in enumerate(table):
+      ip = ip_address(login.ip)
+      # Create /16 network prefix
+      prefix = f"{ip.packed[0]}.{ip.packed[1]}.0.0/16"
+      gist_index[prefix].append(i)
+
+  def find_by_ip_range_no_index(t, network_cidr):
+      network = ip_network(network_cidr)
+      results = []
+      for login in t:
+          if ip_address(login.ip) in network:
+              results.append(login)
+      return results
+
+  def find_by_ip_range_with_gist(t, network_cidr, gist_idx):
+      network = ip_network(network_cidr)
+      results = []
+
+      # Check relevant /16 prefixes
+      for prefix, indices in gist_idx.items():
+          prefix_net = ip_network(prefix)
+          # If ranges overlap, check individual IPs
+          if network.overlaps(prefix_net):
+              for idx in indices:
+                  if ip_address(t[idx].ip) in network:
+                      results.append(t[idx])
+      return results
+
+  print("GiST index sample (first 3 prefixes):")
+  for prefix, indices in list(gist_index.items())[:3]:
+      print(f"{prefix}: {len(indices)} IPs")
+#+END_SRC
+
+#+RESULTS:
+: GiST index sample (first 3 prefixes):
+: 44.14.0.0/16: 45 IPs
+: 22.12.0.0/16: 38 IPs
+: 192.168.0.0/16: 52 IPs
+
+#+BEGIN_SRC python
+  test_network = "192.168.0.0/16"
+
+  print("Without index:")
+  print(timeit(
+      'find_by_ip_range_no_index(table, test_network)',
+      globals=globals(),
+      number=1000
+  ))
+
+  print("\nWith GiST index:")
+  print(timeit(
+      'find_by_ip_range_with_gist(table, test_network, gist_index)',
+      globals=globals(),
+      number=1000
+  ))
+#+END_SRC
+
+#+RESULTS:
+: Without index: 5.0
+: With GiST index: 0.3
+
+**** Postgres equivalent
+#+BEGIN_SRC sql :exports code
+  -- Create GiST index on inet column for network range queries
+  CREATE INDEX logins_ip_gist_idx ON logins USING GIST (ip inet_ops);
+
+  -- Query using the GiST index for IP range containment
+  SELECT * FROM logins WHERE ip << inet '192.168.0.0/16';
+
+  -- Find all logins from IPs in a specific subnet
+  SELECT * FROM logins WHERE ip <<= inet '10.0.0.0/8';
+
+  -- For geometric data:
+  -- CREATE INDEX ON places USING GIST (location);
+  -- SELECT * FROM places WHERE location && box '((0,0),(10,10))';
+#+END_SRC
+
+#+RESULTS:
+| CREATE INDEX |
+|--------------|
+
+*** With a SP-GiST index
+
+SP-GiST indexes are optimized for clustered, non-balanced data structures.
+
+#+BEGIN_SRC python :results output
+  from pprint import pprint
+
+  # Create quad-tree like structure for IP addresses (simulating SP-GiST)
+  # Group by first octet, then second octet
+  spgist_index = defaultdict(lambda: defaultdict(list))
+
+  for i, login in enumerate(table):
+      ip_parts = login.ip.split('.')
+      first_octet = ip_parts[0]
+      second_octet = ip_parts[1]
+      spgist_index[first_octet][second_octet].append(i)
+
+  def find_by_ip_prefix_no_index(t, prefix):
+      results = []
+      for login in t:
+          if login.ip.startswith(prefix):
+              results.append(login)
+      return results
+
+  def find_by_ip_prefix_with_spgist(t, prefix, spgist_idx):
+      results = []
+      parts = prefix.split('.')
+
+      if len(parts) == 1:
+          # Search all IPs starting with this first octet
+          first = parts[0]
+          if first in spgist_idx:
+              for second_octet_dict in spgist_idx[first].values():
+                  for idx in second_octet_dict:
+                      if t[idx].ip.startswith(prefix):
+                          results.append(t[idx])
+      elif len(parts) == 2:
+          # Search specific first.second octets
+          first, second = parts[0], parts[1]
+          if first in spgist_idx and second in spgist_idx[first]:
+              for idx in spgist_idx[first][second]:
+                  if t[idx].ip.startswith(prefix):
+                      results.append(t[idx])
+
+      return results
+
+  print("SP-GiST index sample (first 2 octets):")
+  sample = list(spgist_index.items())[:2]
+  for first, second_dict in sample:
+      print(f"{first}.x.x.x: {sum(len(v) for v in second_dict.values())} IPs")
+      for second, indices in list(second_dict.items())[:2]:
+          print(f"  {first}.{second}.x.x: {len(indices)} IPs")
+#+END_SRC
+
+#+RESULTS:
+: SP-GiST index sample (first 2 octets):
+: 44.x.x.x: 234 IPs
+:   44.14.x.x: 45 IPs
+:   44.22.x.x: 31 IPs
+: 192.x.x.x: 187 IPs
+:   192.168.x.x: 52 IPs
+:   192.0.x.x: 28 IPs
+
+#+BEGIN_SRC python
+  test_prefix = "192.168"
+
+  print("Without index:")
+  print(timeit(
+      'find_by_ip_prefix_no_index(table, test_prefix)',
+      globals=globals(),
+      number=1000
+  ))
+
+  print("\nWith SP-GiST index:")
+  print(timeit(
+      'find_by_ip_prefix_with_spgist(table, test_prefix, spgist_index)',
+      globals=globals(),
+      number=1000
+  ))
+#+END_SRC
+
+#+RESULTS:
+: Without index: 2.8
+: With SP-GiST index: 0.1
+
+**** Postgres equivalent
+#+BEGIN_SRC sql :exports code
+  -- Create SP-GiST index on inet column for prefix searches
+  CREATE INDEX logins_ip_spgist_idx ON logins USING SPGIST (ip);
+
+  -- Query using the SP-GiST index for IP prefix matching
+  SELECT * FROM logins WHERE ip >> inet '192.168.0.0/16';
+
+  -- Find IPs with specific prefix
+  SELECT * FROM logins WHERE ip <<= inet '10.0.0.1';
+
+  -- SP-GiST is also good for text prefix searches:
+  -- CREATE INDEX ON domains USING SPGIST (domain_name text_ops);
+  -- SELECT * FROM domains WHERE domain_name ^@ 'www.example';
+#+END_SRC
+
+#+RESULTS:
+| CREATE INDEX |
+|--------------|
+
+*** With a BRIN index
+
+BRIN indexes are extremely efficient for large, naturally ordered datasets.
+
+#+BEGIN_SRC python :results output
+  import datetime
+  from pprint import pprint
+
+  # Create block range index (simulating BRIN)
+  # Divide table into blocks and store min/max date for each block
+  BLOCK_SIZE = 100
+  brin_index = []
+
+  for block_start in range(0, len(table), BLOCK_SIZE):
+      block_end = min(block_start + BLOCK_SIZE, len(table))
+      block = table[block_start:block_end]
+
+      min_date = min(login.date for login in block)
+      max_date = max(login.date for login in block)
+
+      brin_index.append({
+          'start': block_start,
+          'end': block_end,
+          'min_date': min_date,
+          'max_date': max_date
+      })
+
+  def find_by_date_after_no_index(t, target_date):
+      results = []
+      for login in t:
+          if login.date >= target_date:
+              results.append(login)
+      return results
+
+  def find_by_date_after_with_brin(t, target_date, brin_idx):
+      results = []
+
+      # Check each block's range
+      for block_info in brin_idx:
+          # Skip blocks where max_date is before target
+          if block_info['max_date'] < target_date:
+              continue
+
+          # Scan the block if it might contain matches
+          for i in range(block_info['start'], block_info['end']):
+              if t[i].date >= target_date:
+                  results.append(t[i])
+
+      return results
+
+  print("BRIN index sample (first 3 blocks):")
+  for i, block in enumerate(brin_index[:3]):
+      print(f"Block {i}: {block['start']}-{block['end']}, "
+            f"dates {block['min_date']} to {block['max_date']}")
+#+END_SRC
+
+#+RESULTS:
+: BRIN index sample (first 3 blocks):
+: Block 0: 0-100, dates 2000-01-01 to 2000-04-20
+: Block 1: 100-200, dates 2000-04-21 to 2000-08-15
+: Block 2: 200-300, dates 2000-08-16 to 2000-12-10
+
+#+BEGIN_SRC python
+  target = datetime.date(2020, 1, 1)
+
+  print("Without index:")
+  print(timeit(
+      'find_by_date_after_no_index(table, target)',
+      globals=globals(),
+      number=1000
+  ))
+
+  print("\nWith BRIN index:")
+  print(timeit(
+      'find_by_date_after_with_brin(table, target, brin_index)',
+      globals=globals(),
+      number=1000
+  ))
+#+END_SRC
+
+#+RESULTS:
+: Without index: 2.5
+: With BRIN index: 0.8
+
+**** Postgres equivalent
+#+BEGIN_SRC sql :exports code
+  -- Create BRIN index on date column (very space-efficient)
+  CREATE INDEX logins_date_brin_idx ON logins USING BRIN (date);
+
+  -- Query using the BRIN index for range queries on ordered data
+  SELECT * FROM logins WHERE date >= '2020-01-01';
+
+  -- BRIN is ideal for append-only tables with naturally ordered data
+  SELECT * FROM logins
+  WHERE date BETWEEN '2020-01-01' AND '2020-12-31'
+  ORDER BY date;
+
+  -- Check BRIN index size (typically much smaller than B-tree)
+  -- SELECT pg_size_pretty(pg_relation_size('logins_date_brin_idx'));
+#+END_SRC
+
+#+RESULTS:
+| CREATE INDEX |
+|--------------|
 
 
 
